@@ -13,8 +13,8 @@ def TCPClient(serverName, serverPort):
     clientSocket = socket(AF_INET, SOCK_STREAM)
     clientSocket.connect((serverName, serverPort))
     
-    sentence = raw_input('Input lowercase sentence:')
-    clientSocket.send(sentence)
+    sentence = input('Input lowercase sentence:')
+    clientSocket.send(sentence.encode())
     modifiedSentence = clientSocket.recv(BUFFER_SIZE)
     
     print("From Server:", modifiedSentence)
@@ -23,11 +23,11 @@ def TCPClient(serverName, serverPort):
     
     # The function checks user-entered parameters for client work
 def check_client_params(serverName, portNumber):
-    if int(sys.argv[2]) > PORT_UPPER_BOUND or int (sys.argv[2]) < PORT_LOWER_BOUND:
+    if int(portNumber) > PORT_UPPER_BOUND or int (portNumber) < PORT_LOWER_BOUND:
         print("Port number invalid. Port number should be in range (1024, 5000).")
         return False
     try:
-        socket.gethostbyname(sys.argv[1])
+        gethostbyname(serverName)
     except socket.error:
         print("Invalid host name. Exiting.")
         return False
@@ -51,7 +51,7 @@ def TCPServer(serverPort):
     
 # The function checks user-entered parameters for server work
 def check_server_params(serverPort):
-    if int(sys.argv[1]) > PORT_UPPER_BOUND or int (sys.argv[1]) < PORT_LOWER_BOUND:
+    if int(serverPort) > PORT_UPPER_BOUND or int (serverPort) < PORT_LOWER_BOUND:
         print("Port number invalid. Port number should be in range (1024, 5000).")
         return False
     return True        
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     if len (sys.argv) == 3:
         type = check_client_params(sys.argv[1], sys.argv[2]) #checks server name and port number
         if type:
-            udp_client(sys.argv[1], int(sys.argv[2]))
+            TCPClient(sys.argv[1], int(sys.argv[2]))
         else:
             print("Invalid input")
             print("Please, enter \"python \"TCP client-server.py\" -help\" to get instructions")
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     elif len (sys.argv) == 2: #checks port number
         type = check_server_params(sys.argv[1])
         if type:
-            udp_server(int(sys.argv[1]))
+            TCPServer(int(sys.argv[1]))
         elif sys.argv[1] == "-help":
             PrintInformation()
         else:
@@ -85,5 +85,5 @@ if __name__ == '__main__':
             print("Please, enter \"python \"TCP client-server.py\" -help\" to get instructions")
 
     else:
-        print("Invalid input! The programm expects 1 or 2 params, but {} were given").format(len(sys.argv) - 1)
+        print("Invalid input! The programm expects 1 or 2 params, but {} were given".format(len(sys.argv) - 1))
         print("Please, enter \"python \"TCP client-server.py\" -help\" to get instructions")
